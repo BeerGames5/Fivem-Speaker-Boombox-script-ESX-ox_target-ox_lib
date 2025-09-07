@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Boombox Player</title>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <style>
+        body { margin:0; overflow:hidden; background:transparent; }
+        #players { display:none; }
+    </style>
+</head>
+<body>
+<div id="players"></div>
+
+<script>
+let players = {}
+
+function createPlayer(netId, url, volume) {
+    let videoId = null
+    try {
+        if(url.includes("youtu.be/")) {
+            videoId = url.split("youtu.be/")[1].split(/[?&]/)[0]
+        } else if(url.includes("youtube.com/watch")) {
+            const params = new URLSearchParams(url.split('?')[1])
+            videoId = params.get("v")
+        }
+    } catch(e){ console.error("Invalid YouTube URL", e) }
+
+    if(!videoId) return
+
+    let div = document.createElement("div")
+    div.id = "player_" + netId
+    document.getElementById("players").appendChild(div)
+
+    players[netId] = new YT.Player(div.id, {
+        height: '0',
+        width: '0',
+        videoId: videoId,
+        playerVars: {
+            autoplay: 1,
+            controls: 0,
+            disablekb: 1,
+            modestbranding: 1,
+            loop: 1,
+            playlist: videoId
+        },
+        events: {
+            'onReady': (event) => {
+                event.target.setVolume(volume * 100)
+                event.target.playVideo()
+            }
+        }
+    })
+}
+
+function stopPlayer(netId) {
+    if(players[netId]) {
+        players[netId].stopVideo()
+        players[netId].destroy()
+        delete players[netId]
+    }
+}
+
+function setVolume(netId, volume) {
+    if(players[netId]) {
+        players[netId].setVolume(Math.floor(volume * 100))
+    }
+}
+
+window.addEventListener('message', function(event){
+    const data = event.data
+    if(data.action === 'play') {
+        createPlayer(data.netId, data.url, data.volume)
+    } else if(data.action === 'stop') {
+        stopPlayer(data.netId)
+    } else if(data.action === 'volume') {
+        setVolume(data.netId, data.volume)
+    }
+})
+</script>
+</body>
+</html>
