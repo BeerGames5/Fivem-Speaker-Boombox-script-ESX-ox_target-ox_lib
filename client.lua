@@ -99,12 +99,12 @@ function setupTargetOptions(netId, entity)
             table.insert(options, {
                 name = 'playMusic',
                 icon = 'fa-solid fa-play',
-                label = 'Muziek spelen',
+                label = 'Play Music',
                 distance = 2.0,
                 onSelect = function()
                     ESX.TriggerServerCallback('esx_boombox:canInteract', function(canInteract)
                         if not canInteract then return end
-                        local input = lib.inputDialog('Muziek URL', {{type='input', label='YouTube URL', required=true}})
+                        local input = lib.inputDialog('Music URL', {{type='input', label='YouTube URL', required=true}})
                         if input then
                             TriggerServerEvent('esx_boombox:playMusic', netId, input[1])
                         end
@@ -115,7 +115,7 @@ function setupTargetOptions(netId, entity)
 table.insert(options, {
     name = 'changeVolume',
     icon = 'fa-solid fa-volume-high',
-    label = 'Volume wijzigen',
+    label = 'Change Volume',
     distance = 2.0,
     onSelect = function()
         ESX.TriggerServerCallback('esx_boombox:canInteract', function(canInteract)
@@ -132,13 +132,13 @@ table.insert(options, {
 table.insert(options, {
     name = 'changeRange',
     icon = 'fa-solid fa-signal',
-    label = 'Range aanpassen',
+    label = 'Adjust Range',
     distance = 2.0,
     onSelect = function()
         ESX.TriggerServerCallback('esx_boombox:canInteract', function(canInteract)
             if not canInteract then return end
             local currentRange = boomboxSounds[netId] and boomboxSounds[netId].range or 15
-            local input = lib.inputDialog('Bereik', {{type='slider', label='Bereik (meters)', min=1, max=50, default=currentRange}})
+            local input = lib.inputDialog('Range', {{type='slider', label='Range (meters)', min=1, max=50, default=currentRange}})
             if input then
                 TriggerServerEvent('esx_boombox:changeRange', netId, input[1])
             end
@@ -151,7 +151,7 @@ table.insert(options, {
             table.insert(options, {
                 name = 'togglePublic',
                 icon = isPublic and 'fa-solid fa-lock' or 'fa-solid fa-unlock',
-                label = isPublic and 'Privé zetten' or 'Openbaar zetten',
+                label = isPublic and 'Put Private' or 'Put Public',
                 distance = 2.0,
                 onSelect = function()
                     TriggerServerEvent('esx_boombox:togglePublic', netId)
@@ -161,7 +161,7 @@ table.insert(options, {
             table.insert(options, {
                 name = 'takeBack',
                 icon = 'fa-solid fa-box-archive',
-                label = 'Box terugnemen',
+                label = 'Take Box',
                 distance = 2.0,
                 onSelect = function()
                     TriggerServerEvent('esx_boombox:takeBack', netId)
@@ -171,7 +171,7 @@ table.insert(options, {
 table.insert(options, {
     name = 'pickupBoombox',
     icon = 'fa-solid fa-hand-paper',
-    label = 'Op pakken',
+    label = 'Carry Box',
     distance = 2.0,
     onSelect = function()
         TriggerEvent('esx_boombox:pickupBoombox', netId)
@@ -231,7 +231,7 @@ AddEventHandler('esx_boombox:pickupBoombox', function(netId)
     boomboxSounds[netId].carried = true
 
     blockingX = true
-    lib.showTextUI('[E] Box neerzetten')
+    lib.showTextUI('[E] Place Box')
 end)
 
 Citizen.CreateThread(function()
